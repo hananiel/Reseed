@@ -6,6 +6,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="2020.3.0" PrivateAssets="all" />
-		<PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.3" />
 	</ItemGroup>
 </Project>
