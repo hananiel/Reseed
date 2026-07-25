@@ -1,22 +1,35 @@
-﻿using System;
+using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using DbUp;
 using DbUp.Engine;
 using DbUp.Helpers;
-using DotNet.Testcontainers.Containers.Builders;
-using DotNet.Testcontainers.Containers.Configurations.Abstractions;
-using DotNet.Testcontainers.Containers.Modules.Databases;
-using DotNet.Testcontainers.Containers.WaitStrategies;
+using Testcontainers.MsSql;
 
 namespace Reseed.Tests.Integration.Core
 {
 	public sealed class SqlServerContainer: IAsyncDisposable
 	{
+		private const string DatabaseName = "MsSqlContainerDb";
+		private const string Password = "!A1B2c3d4_";
+		private const string ServerImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
+
 		private readonly string scriptsFolder;
 		private readonly Func<string, bool> scriptFilter;
-		private readonly MsSqlTestcontainer server;
+		private readonly MsSqlContainer server;
 
-		public string ConnectionString => server.ConnectionString;
+		public string ConnectionString
+		{
+			get
+			{
+				var connectionString = new SqlConnectionStringBuilder(server.GetConnectionString())
+				{
+					InitialCatalog = DatabaseName
+				};
+
+				return connectionString.ConnectionString;
+			}
+		}
 
 		public SqlServerContainer(string scriptsFolder)
 			: this(scriptsFolder, _ => true)
@@ -33,10 +46,10 @@ namespace Reseed.Tests.Integration.Core
 		public async Task StartAsync()
 		{
 			await StartServerAsync();
-			EnsureDatabase.For.SqlDatabase(server.ConnectionString);
+			EnsureDatabase.For.SqlDatabase(ConnectionString);
 
 			var migrationResult = MigrateDatabase(
-				server.ConnectionString,
+				ConnectionString,
 				scriptsFolder,
 				scriptFilter);
 
@@ -63,10 +76,9 @@ namespace Reseed.Tests.Integration.Core
 		public ValueTask DisposeAsync() => 
 			this.server.DisposeAsync();
 
-		private static MsSqlTestcontainer CreateDatabaseContainer() =>
-			new TestcontainersBuilder<MsSqlTestcontainer>()
-				.WithDatabase(new DbContainerConfiguration("MsSqlContainerDb", "!A1B2c3d4_"))
-				.WithName($"sql-db_{Guid.NewGuid()}")
+		private static MsSqlContainer CreateDatabaseContainer() =>
+			new MsSqlBuilder(ServerImage)
+				.WithPassword(Password)
 				.Build();
 
 		private static DatabaseUpgradeResult MigrateDatabase(
@@ -84,32 +96,5 @@ namespace Reseed.Tests.Integration.Core
 			
 			return upgrade.PerformUpgrade();
 		}
-	}
-
-	public sealed class DbContainerConfiguration : TestcontainerDatabaseConfiguration
-	{
-		private const string ServerImage = "mcr.microsoft.com/mssql/server:latest";
-		private const string PasswordKey = "SA_PASSWORD";
-		private const string EulaKey = "ACCEPT_EULA";
-		private const int ServerPort = 1433;
-
-		public DbContainerConfiguration(string database, string password) : base(ServerImage, ServerPort)
-		{
-			Environments[EulaKey] = "Y";
-			Password = password;
-			Database = database;
-		}
-
-		public override string Username => "sa";
-
-		public override string Password
-		{
-			get => Environments[PasswordKey];
-			set => Environments[PasswordKey] = value;
-		}
-
-		public override IWaitForContainerOS WaitStrategy => Wait
-			.ForUnixContainer()
-			.UntilPortIsAvailable(ServerPort);
 	}
 }
