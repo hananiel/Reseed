@@ -53,7 +53,7 @@ namespace Reseed.Tests.Integration
 				this,
 				this.createMode,
 				sql => sql.ExecuteNonQueryAsync("DELETE FROM [dbo].[User]"), 
-				async sql => Assert.AreEqual(userCount, await GetUsersCount(sql)));
+				async sql => Assert.That(await GetUsersCount(sql), Is.EqualTo(userCount)));
 
 			static Task<int> GetUsersCount(SqlEngine sqlEngine) =>
 				sqlEngine.ExecuteScalarAsync<int>("SELECT COUNT(1) FROM [dbo].[User]");

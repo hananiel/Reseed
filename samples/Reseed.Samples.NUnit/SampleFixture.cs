@@ -25,11 +25,11 @@ namespace Reseed.Samples.NUnit
 			// We don't need to do any User table initialization manually.
 			// Reseeder, invoked in the TestFixtureBase type, will take care of that
 			// And insert all the User rows described at 'Data/Users.xml' and in Inline csharp provider.
-			Assert.AreEqual(UsersCount, await GetUsersCount());
+			Assert.That(await GetUsersCount(), Is.EqualTo(UsersCount));
 
 			// Executing an action with mutation, which won't be noticed in the rest of the tests.
 			await ExecuteNonQueryAsync("DELETE FROM [dbo].[User]");
-			Assert.AreEqual(0, await GetUsersCount());
+			Assert.That(await GetUsersCount(), Is.EqualTo(0));
 		}
 
 		[Test]
@@ -38,11 +38,11 @@ namespace Reseed.Samples.NUnit
 		{
 			// In spite of the previous test, which might have deleted all the data from User table,
 			// we have the expected rows count here.
-			Assert.AreEqual(UsersCount, await GetUsersCount());
+			Assert.That(await GetUsersCount(), Is.EqualTo(UsersCount));
 
 			// Executing an action with mutation, which won't be noticed in the rest of the tests.
 			await ExecuteNonQueryAsync("INSERT INTO [dbo].[User] VALUES ('Test', 'Test')");
-			Assert.AreEqual(UsersCount + 1, await GetUsersCount());
+			Assert.That(await GetUsersCount(), Is.EqualTo(UsersCount + 1));
 		}
 
 		private static Task<int> GetUsersCount() => 
