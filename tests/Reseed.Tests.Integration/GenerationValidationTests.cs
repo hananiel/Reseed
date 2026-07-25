@@ -30,7 +30,7 @@ namespace Reseed.Tests.Integration
 		// when entities load don't match any of the existing tables
 		public Task ShouldFailGracefully_UnknownEntity() =>
 			AssertSeedFails(ex => ex.Message.StartsWith(
-				"Some of the entities found don't have matching database tables. " +
+				"Some of the entities provided don't have matching database tables. " +
 				"Make sure that names are correct and expected."));
 
 		private Task AssertSeedFails(Expression<Func<Exception, bool>> assertError) =>
