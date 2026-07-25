@@ -16,7 +16,7 @@ namespace Reseed.Samples.NUnit
 	// It will make sure that test database is initialized and cleaned up just once as well as
 	// insert and delete test data before/after each test run. 
 	[TestFixture]
-	public class TestFixtureBase
+	public abstract class TestFixtureBase
 	{
 		private static readonly TestDatabase Database = new(
 			GetRelativePath("Migrations"),
