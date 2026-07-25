@@ -19,11 +19,11 @@
 		<DefineConstants>TRACE</DefineConstants>
 	</PropertyGroup>
 
-	<!-- We want to use PackageReference with packages.lock.json for dependencies management -->
+	<!-- We want to use PackageReference for dependencies management -->
 	<PropertyGroup>
 		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
 		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
-		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
 		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
 	</PropertyGroup>
 
