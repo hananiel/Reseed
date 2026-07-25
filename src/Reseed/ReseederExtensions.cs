@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using JetBrains.Annotations;
+using Microsoft.Data.SqlClient;
 using Reseed.Configuration;
 using Reseed.Generation;
 using Reseed.Ordering;

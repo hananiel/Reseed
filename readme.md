@@ -181,7 +181,7 @@ There are a few ways to transfer the data, which are exposed at `TemporaryTables
     TemporaryTablesInsertDefinition.SqlBulkCopy(Func<SqlBulkCopyOptions, SqlBulkCopyOptions>)
     ```
 
-    [SqlBulkCopy](https://docs.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlbulkcopy?view=dotnet-plat-ext-5.0) type is used to transfer data to the target tables.
+    [SqlBulkCopy](https://learn.microsoft.com/dotnet/api/microsoft.data.sqlclient.sqlbulkcopy) type is used to transfer data to the target tables.
 
 4. **BCP** (Work in progress):
     Uses [BCP utility](https://docs.microsoft.com/en-us/sql/tools/bcp-utility?view=sql-server-ver15) to copy the data.

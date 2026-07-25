@@ -1,9 +1,9 @@
 using System;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using DbUp;
 using DbUp.Engine;
 using DbUp.Helpers;
+using Microsoft.Data.SqlClient;
 using Testcontainers.MsSql;
 
 namespace Reseed.Tests.Integration.Core
@@ -24,7 +24,8 @@ namespace Reseed.Tests.Integration.Core
 			{
 				var connectionString = new SqlConnectionStringBuilder(server.GetConnectionString())
 				{
-					InitialCatalog = DatabaseName
+					InitialCatalog = DatabaseName,
+					TrustServerCertificate = true
 				};
 
 				return connectionString.ConnectionString;
