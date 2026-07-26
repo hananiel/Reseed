@@ -14,7 +14,7 @@ namespace Reseed.Samples.NUnit
 {
 	// One of the possible ways to use Reseeder involves creation of base type for your test fixtures.
 	// It will make sure that test database is initialized and cleaned up just once as well as
-	// insert and delete test data before/after each test run. 
+	// restore test data before each test run.
 	[TestFixture]
 	public abstract class TestFixtureBase
 	{
