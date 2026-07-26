@@ -326,12 +326,30 @@ Use `DataProviders.Xml` to use this approach.
 DataProviders.Xml(string);
 DataProviders.Xml(string, Func<string, bool>);
 DataProviders.Xml(string, string, Func<string, bool>);
+DataProviders.Xml(string, string, Func<string, bool>,
+    IReadOnlyCollection<Func<XmlValueContext, string, string>>);
 ```
 
 It's possible to control from what location data should be read and what files to read:
 - you need to specify a root folder, which is to be scanned recursively;
 - you could specify file name pattern to use only files, which match it(see [Directory.EnumerateFiles](https://docs.microsoft.com/en-us/dotnet/api/system.io.directory.enumeratefiles?view=net-5.0#System_IO_Directory_EnumerateFiles_System_String_System_String_) for supported pattern features);
 - you could filter your files additionally by providing a `Func<string, bool>` predicate to check each file's name.
+
+The most advanced overload accepts value transformers. They are applied in collection order, and each receives `XmlValueContext` metadata plus the previous transformer's result. The context exposes the source `FilePath`, XML `EntityName`, and `PropertyName`:
+
+```csharp
+var dataProvider = DataProviders.Xml(
+    @".\Data",
+    "*.xml",
+    _ => true,
+    new Func<XmlValueContext, string, string>[]
+    {
+        (_, value) => value.Trim(),
+        (context, value) => context.PropertyName == "Email"
+            ? value.ToLowerInvariant()
+            : value
+    });
+```
 
 Rules to describe the data are simple:
 - Each row should be represented as xml element with nested elements for each column. 

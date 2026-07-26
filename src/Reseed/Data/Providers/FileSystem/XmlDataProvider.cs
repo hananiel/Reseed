@@ -8,20 +8,53 @@ using Reseed.Utils;
 
 namespace Reseed.Data.Providers.FileSystem
 {
+	public sealed class XmlValueContext
+	{
+		public readonly string FilePath;
+		public readonly string EntityName;
+		public readonly string PropertyName;
+
+		public XmlValueContext(
+			[NotNull] string filePath,
+			[NotNull] string entityName,
+			[NotNull] string propertyName)
+		{
+			this.FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
+			this.EntityName = entityName ?? throw new ArgumentNullException(nameof(entityName));
+			this.PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
+		}
+	}
+
 	internal sealed class XmlDataProvider: IVerboseDataProvider
 	{
 		private readonly string dataFolder;
 		private readonly string filePattern;
 		private readonly Func<string, bool> fileFilter;
+		private readonly IReadOnlyCollection<Func<XmlValueContext, string, string>> valueTransformers;
 
 		public XmlDataProvider(
 			[NotNull] string dataFolder,
 			[NotNull] string filePattern,
 			[NotNull] Func<string, bool> fileFilter)
+			: this(
+				dataFolder,
+				filePattern,
+				fileFilter,
+				Array.Empty<Func<XmlValueContext, string, string>>())
+		{
+		}
+
+		public XmlDataProvider(
+			[NotNull] string dataFolder,
+			[NotNull] string filePattern,
+			[NotNull] Func<string, bool> fileFilter,
+			[NotNull] IReadOnlyCollection<Func<XmlValueContext, string, string>> valueTransformers)
 		{
 			this.dataFolder = dataFolder ?? throw new ArgumentNullException(nameof(dataFolder));
 			this.filePattern = filePattern ?? throw new ArgumentNullException(nameof(filePattern));
 			this.fileFilter = fileFilter ?? throw new ArgumentNullException(nameof(fileFilter));
+			this.valueTransformers = valueTransformers ??
+				throw new ArgumentNullException(nameof(valueTransformers));
 		}
 
 		public VerboseDataProviderResult GetEntitiesDetailed()
@@ -59,7 +92,7 @@ namespace Reseed.Data.Providers.FileSystem
 		public IReadOnlyCollection<Entity> GetEntities() => 
 			GetEntitiesDetailed().Entities;
 
-		private static Entity[] ReadFile([NotNull] string path)
+		private Entity[] ReadFile([NotNull] string path)
 		{
 			var file = new DataFile(path);
 			var rootElements = XDocument.Load(path)
@@ -87,10 +120,11 @@ namespace Reseed.Data.Providers.FileSystem
 				.ToArray();
 		}
 
-		private static Entity ParseEntity(DataFile origin, XElement element)
+		private Entity ParseEntity(DataFile origin, XElement element)
 		{
 			AssertNoAttributes(origin, element);
 
+			var entityName = element.Name.LocalName;
 			var propertyElements = element.Elements().ToArray();
 			if (propertyElements.Length == 0)
 			{
@@ -102,15 +136,40 @@ namespace Reseed.Data.Providers.FileSystem
 
 			return new Entity(
 				origin,
-				element.Name.LocalName,
-				propertyElements.Select(e => ParseProperty(origin, e)).ToArray());
+				entityName,
+				propertyElements.Select(e => ParseProperty(origin, entityName, e)).ToArray());
 		}
 
-		private static Property ParseProperty(DataFile origin, XElement element)
+		private Property ParseProperty(DataFile origin, string entityName, XElement element)
 		{
 			AssertNoAttributes(origin, element);
 			AssertNoDescendants(origin, element);
-			return new Property(element.Name.LocalName, element.Value);
+			var propertyName = element.Name.LocalName;
+
+			if (this.valueTransformers.Count == 0)
+				return new Property(propertyName, element.Value);
+
+			var context = new XmlValueContext(
+				origin.FilePath,
+				entityName,
+				propertyName);
+			var transformedValue = this.valueTransformers.Aggregate(
+				element.Value,
+				(value, transformer) =>
+				{
+					var result = transformer(context, value);
+					if (result == null)
+					{
+						throw BuildDocumentError(
+							origin,
+							"XML value transformer returned null for property element " +
+							$"'{propertyName}' in entity element '{entityName}'");
+					}
+
+					return result;
+				});
+
+			return new Property(propertyName, transformedValue);
 		}
 
 		private static void AssertNoDescendants(DataFile dataFile, XElement element)
