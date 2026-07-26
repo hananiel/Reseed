@@ -20,24 +20,35 @@ namespace Reseed.Generation.Cleanup
 			if (tables == null) throw new ArgumentNullException(nameof(tables));
 			if (definition == null) throw new ArgumentNullException(nameof(definition));
 
-			return definition switch
+			switch (definition)
 			{
-				EmptyCleanupDefinition => builder,
+				case EmptyCleanupDefinition:
+					return builder;
 
-				CleanupScriptDefinition scriptDefinition => builder
-					.Add(SeedStage.Delete, DeleteScriptRenderer.Render(tables, scriptDefinition.Configuration)),
+				case CleanupScriptDefinition scriptDefinition:
+					var deleteScripts = DeleteScriptRenderer.Render(
+						tables,
+						scriptDefinition.Configuration);
 
-				CleanupProcedureDefinition procedureDefinition => builder
-					.Add(SeedStage.PrepareDb, RenderCreateProcedureScripts(
-						procedureDefinition.ProcedureName, tables, procedureDefinition.Configuration))
-					.Add(SeedStage.Delete, RenderExecuteProcedureScript(
-						ScriptNames.ExecuteDeleteSp, procedureDefinition.ProcedureName))
-					.Add(SeedStage.CleanupDb, RenderDropProcedureScript(
-						ScriptNames.DropDeleteSp, procedureDefinition.ProcedureName)),
+					return builder
+						.Add(SeedStage.Delete, deleteScripts)
+						.Add(SeedStage.CleanupDb, deleteScripts);
 
-				_ => throw new NotSupportedException(
-					$"Unknown {nameof(CleanupDefinition)} '{definition.GetType().Name}'")
-			};
+				case CleanupProcedureDefinition procedureDefinition:
+					return builder
+						.Add(SeedStage.PrepareDb, RenderCreateProcedureScripts(
+							procedureDefinition.ProcedureName, tables, procedureDefinition.Configuration))
+						.Add(SeedStage.Delete, RenderExecuteProcedureScript(
+							ScriptNames.ExecuteDeleteSp, procedureDefinition.ProcedureName))
+						.Add(SeedStage.CleanupDb, RenderExecuteProcedureScript(
+							ScriptNames.ExecuteDeleteSp, procedureDefinition.ProcedureName))
+						.Add(SeedStage.CleanupDb, RenderDropProcedureScript(
+							ScriptNames.DropDeleteSp, procedureDefinition.ProcedureName));
+
+				default:
+					throw new NotSupportedException(
+						$"Unknown {nameof(CleanupDefinition)} '{definition.GetType().Name}'");
+			}
 		}
 
 		private static IReadOnlyCollection<OrderedItem<SqlScriptAction>> RenderCreateProcedureScripts(

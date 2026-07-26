@@ -100,7 +100,7 @@ The stages are:
 
 - **CleanupDatabase**
 
-    At this stage objects created on the `PrepareDatabase` stage are deleted if there were any. Should be executed the last and once per test fixtures.
+    At this stage data selected by the cleanup configuration is deleted, followed by any objects created on the `PrepareDatabase` stage. Should be executed the last and once per test fixtures.
 
 To generate actions you use `Reseeder.Generate` instance method by configuring generation behavior the way you like, see [Operation modes](#operation-modes) documentation section for additional details. 
 

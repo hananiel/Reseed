@@ -22,6 +22,13 @@ namespace Reseed.Tests.Integration.Core
 		private static TemporaryTablesInsertDefinition TemporaryTablesProcedureDefinition =>
 			TemporaryTablesInsertDefinition.Procedure(new ObjectName("spDeleteData"));
 
+		private static CleanupDefinition CleanupProcedureDefinition =>
+			CleanupDefinition.Procedure(
+				new ObjectName("spCleanupData"),
+				CleanupMode.Delete(),
+				CleanupTarget,
+				true);
+
 		public static readonly Func<IDataProvider, SeedMode> BasicScriptDelete =
 			dp => SeedMode.Basic(
 				BasicInsertDefinition.Script(),
@@ -56,6 +63,12 @@ namespace Reseed.Tests.Integration.Core
 			dp => SeedMode.Basic(
 				BasicProcedureDefinition,
 				CleanupDefinition.Script(CleanupMode.Truncate(), CleanupTarget, true),
+				dp);
+
+		public static readonly Func<IDataProvider, SeedMode> BasicScriptSpDelete =
+			dp => SeedMode.Basic(
+				BasicInsertDefinition.Script(),
+				CleanupProcedureDefinition,
 				dp);
 
 		public static readonly Func<IDataProvider, SeedMode> TempTablesScriptDelete =
@@ -98,6 +111,13 @@ namespace Reseed.Tests.Integration.Core
 				"temp",
 				TemporaryTablesProcedureDefinition,
 				CleanupDefinition.Script(CleanupMode.Delete(), CleanupTarget, true),
+				dp);
+
+		public static readonly Func<IDataProvider, SeedMode> TempTablesScriptSpDelete =
+			dp => SeedMode.TemporaryTables(
+				"temp",
+				TemporaryTablesInsertDefinition.Script(),
+				CleanupProcedureDefinition,
 				dp);
 
 		public static TestFixtureParameters[] Every()
