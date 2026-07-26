@@ -30,7 +30,7 @@ namespace Reseed.Generation.TemporaryTables
 					t =>
 					{
 						IReadOnlyCollection<ColumnSchema> columns = t.Columns
-							.Where(c => !c.IsComputed)
+							.Where(c => !c.IsComputed && !c.DataType.IsRowVersion)
 							.ToArray();
 
 						return new SqlBulkCopyAction(

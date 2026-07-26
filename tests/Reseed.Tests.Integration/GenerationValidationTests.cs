@@ -33,6 +33,11 @@ namespace Reseed.Tests.Integration
 				"Some of the entities provided don't have matching database tables. " +
 				"Make sure that names are correct and expected."));
 
+		[Test]
+		public Task ShouldFailGracefully_RowVersionProvided() =>
+			AssertSeedFails(ex => ex.Message.Contains(
+				"Table column 'Version' is rowversion and shouldn't be specified."));
+
 		private Task AssertSeedFails(Expression<Func<Exception, bool>> assertError) =>
 			Conventional.AssertGenerationFails(
 				this,

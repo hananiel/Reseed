@@ -78,7 +78,7 @@ namespace Reseed.Generation.Schema
 				columnSchema.Name,
 				columnSchema.DataType,
 				HasQuotedLiteral(columnSchema.DataType),
-				!(columnSchema.IsNullable || columnSchema.HasDefaultValue),
+				!(columnSchema.IsNullable || columnSchema.HasDefaultValue || columnSchema.DataType.IsRowVersion),
 				columnSchema.IsIdentity
 					? new IdentityOptions(
 						columnSchema.IdentitySeed!.Value, 
@@ -126,6 +126,10 @@ namespace Reseed.Generation.Schema
 					if (column.IsComputed)
 					{
 						throw BuildComputedColumnException(entity, column);
+					}
+					if (column.DataType.IsRowVersion)
+					{
+						throw BuildRowVersionColumnException(entity, column);
 					}
 
 					return (p.Name, AdjustPropertyValue(p, column));
@@ -214,6 +218,13 @@ namespace Reseed.Generation.Schema
 			new(
 				$"Invalid '{entity.Name}' entity data. " +
 				$"Table column '{column.Name}' is computed and shouldn't be specified. " +
+				BuildOriginErrorMessage(entity.Origin));
+
+		private static InvalidOperationException BuildRowVersionColumnException(Entity entity,
+			Column column) =>
+			new(
+				$"Invalid '{entity.Name}' entity data. " +
+				$"Table column '{column.Name}' is rowversion and shouldn't be specified. " +
 				BuildOriginErrorMessage(entity.Origin));
 
 		private static InvalidOperationException BuildUnknownColumnException(Property property, Entity entity) =>

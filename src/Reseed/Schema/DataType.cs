@@ -77,7 +77,9 @@ namespace Reseed.Schema
 			this.IsImage = this.Name.Equals("image", StringComparison.OrdinalIgnoreCase);
 			this.IsHierarchyId = this.Name.Equals("hierarchyid", StringComparison.OrdinalIgnoreCase);
 			this.IsSqlVariant = this.Name.Equals("sql_variant", StringComparison.OrdinalIgnoreCase);
-			this.IsRowVersion = this.Name.Equals("rowversion", StringComparison.OrdinalIgnoreCase);
+			this.IsRowVersion =
+				this.Name.Equals("rowversion", StringComparison.OrdinalIgnoreCase) ||
+				this.Name.Equals("timestamp", StringComparison.OrdinalIgnoreCase);
 			this.IsXml = this.Name.StartsWith("xml", StringComparison.OrdinalIgnoreCase);
 			this.IsGeometry = this.Name.Equals("geometry", StringComparison.OrdinalIgnoreCase);
 			this.IsGeography = this.Name.Equals("geography", StringComparison.OrdinalIgnoreCase);

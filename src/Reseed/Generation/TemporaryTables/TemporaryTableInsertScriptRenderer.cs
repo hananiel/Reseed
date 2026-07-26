@@ -47,7 +47,7 @@ namespace Reseed.Generation.TemporaryTables
 				tables.Select(t =>
 				{
 					var columnsScript = string.Join(", ", t.Columns
-							.Where(c => !c.IsComputed)
+							.Where(c => !c.IsComputed && !c.DataType.IsRowVersion)
 							.Select(c => $"[{c.Name}]"))
 						.Wrap(100, _ => _, _ => true, ',')
 						.WithMargin("\t", '|');
