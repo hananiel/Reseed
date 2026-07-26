@@ -31,19 +31,19 @@ namespace Reseed.Configuration
 		}
 
 		public static CleanupOnlySeedMode CleanupOnly(
-			[NotNull] CleanupDefinition cleanupDefinition) =>
+			[NotNull] AnyCleanupDefinition cleanupDefinition) =>
 			new(cleanupDefinition);
 
 		public static SeedMode Basic(
 			[NotNull] BasicInsertDefinition insertDefinition,
-			[NotNull] CleanupDefinition cleanupDefinition,
+			[NotNull] AnyCleanupDefinition cleanupDefinition,
 			[NotNull] params IDataProvider[] dataProviders) =>
 			new BasicSeedMode(insertDefinition, cleanupDefinition, dataProviders);
 
 		public static SeedMode TemporaryTables(
 			[NotNull] string schemaName,
 			[NotNull] TemporaryTablesInsertDefinition insertDefinition,
-			[NotNull] CleanupDefinition cleanupDefinition,
+			[NotNull] AnyCleanupDefinition cleanupDefinition,
 			[NotNull] params IDataProvider[] dataProviders) =>
 			new TemporaryTablesSeedMode(
 				schemaName, 

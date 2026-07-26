@@ -9,11 +9,11 @@ namespace Reseed.Configuration.Basic
 	internal sealed class BasicSeedMode : SeedMode
 	{
 		public readonly BasicInsertDefinition InsertDefinition;
-		public readonly CleanupDefinition CleanupDefinition;
+		public readonly AnyCleanupDefinition CleanupDefinition;
 
 		public BasicSeedMode(
 			[NotNull] BasicInsertDefinition insertDefinition,
-			[NotNull] CleanupDefinition cleanupDefinition,
+			[NotNull] AnyCleanupDefinition cleanupDefinition,
 			[NotNull] IReadOnlyCollection<IDataProvider> dataProviders)
 			: base(dataProviders)
 		{

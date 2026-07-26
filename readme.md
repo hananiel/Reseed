@@ -191,13 +191,13 @@ There are a few ways to transfer the data, which are exposed at `TemporaryTables
 Sometimes you want to manage data insertion on your own and need just a database cleanup, this is the mode to be used then. Note that you don't need to specify `IDataProvider` for that case, which is a reasonable behavior as you don't need any data to be inserted.
 
 ```csharp
-SeedMode.CleanupOnly(CleanupDefinition);
+SeedMode.CleanupOnly(AnyCleanupDefinition);
 ```
 As a result you'll get `SeedActions` instance, which does nothing but database cleanup during its `RestoreData` phase. See [Data cleanup](data-cleanup) section for cleanup configuration options.
 
 # Data cleanup 
 
-There is a posibility to configure the way Reseed generates data cleanup scripts, which are needed for some of the seed modes. Configuration is done with use of `CleanupDefinition` type.
+There is a posibility to configure the way Reseed generates data cleanup scripts, which are needed for some of the seed modes. Configuration is done with use of `AnyCleanupDefinition` type.
 
 If you don't want Reseed to execute cleanup for you at all, then you could simply use `NoCleanup` cleanup definition. Just make sure to take care of cleaning the database on your own or it will most likely fail on attempt to insert duplicated rows once.
 

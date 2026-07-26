@@ -7,9 +7,9 @@ namespace Reseed.Configuration
 	[PublicAPI]
 	public sealed class CleanupOnlySeedMode : AnySeedMode
 	{
-		public readonly CleanupDefinition CleanupDefinition;
+		public readonly AnyCleanupDefinition CleanupDefinition;
 
-		public CleanupOnlySeedMode([NotNull] CleanupDefinition cleanupDefinition)
+		public CleanupOnlySeedMode([NotNull] AnyCleanupDefinition cleanupDefinition)
 		{
 			this.CleanupDefinition = cleanupDefinition ?? throw new ArgumentNullException(nameof(cleanupDefinition));
 		}

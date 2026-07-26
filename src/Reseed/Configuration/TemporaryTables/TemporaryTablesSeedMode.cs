@@ -10,12 +10,12 @@ namespace Reseed.Configuration.TemporaryTables
 	{
 		public readonly string SchemaName;
 		public readonly TemporaryTablesInsertDefinition InsertDefinition;
-		public readonly CleanupDefinition CleanupDefinition;
+		public readonly AnyCleanupDefinition CleanupDefinition;
 
 		public TemporaryTablesSeedMode(
 			[NotNull] string schemaName,
 			[NotNull] TemporaryTablesInsertDefinition insertDefinition,
-			[NotNull] CleanupDefinition cleanupDefinition,
+			[NotNull] AnyCleanupDefinition cleanupDefinition,
 			[NotNull] IReadOnlyCollection<IDataProvider> dataProviders)
 			: base(dataProviders)
 		{
