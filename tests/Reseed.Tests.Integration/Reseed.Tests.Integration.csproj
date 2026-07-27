@@ -25,6 +25,12 @@
     <None Update="Data\CleanupTests\01_ShouldPreferDeleteForTableReferencedByIndexedView.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\CleanupTests\02_ShouldRejectTruncateForTableReferencedByIndexedView.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\CleanupTests\03_ShouldUseDeleteIfExplicitlyRequested.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\SingleTableTests\04_ShouldInsert_RowVersionMissing.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
