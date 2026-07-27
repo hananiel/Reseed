@@ -147,7 +147,8 @@ namespace Reseed.Generation.TemporaryTables
 							CreateTempTableName(tempSchemaName, t.Name),
 							t.Columns,
 							t.PrimaryKey,
-							rs));
+							rs,
+							false));
 
 		private static OrderedItem<ITableContainer>[] MapContainers(
 			string tempSchemaName,
