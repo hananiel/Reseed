@@ -31,6 +31,7 @@ namespace Reseed.Schema.Providers
 						IdentitySeed = r.GetSqlDecimal(cs["IdentitySeed"]),
 						IdentityIncrement = r.GetSqlDecimal(cs["IdentityIncrement"]),
 						IsComputedColumn = r.GetInt32(cs["IsComputedColumn"]) == 1,
+						IsReferencedByIndexedView = r.GetInt32(cs["IsReferencedByIndexedView"]) == 1,
 						PrimaryKeyColumnOrder = primaryKeyOrder == -1 ? (int?) null : primaryKeyOrder,
 						Type = new
 						{
@@ -73,7 +74,8 @@ namespace Reseed.Schema.Providers
 									c.IsComputedColumn,
 									c.IsNullableColumn,
 									c.ColumnDefaultValue))
-								.ToArray());
+								.ToArray(),
+							gr.First().IsReferencedByIndexedView);
 					}
 					catch (Exception ex)
 					{
@@ -166,6 +168,13 @@ namespace Reseed.Schema.Providers
 			|	IDENT_SEED (c.[table_schema] + '.' + c.[table_name]) as IdentitySeed,  
 			|	IDENT_INCR (c.[table_schema] + '.' + c.[table_name]) as IdentityIncrement,  
 			|	columnproperty(t.[object_id], c.[column_name],'IsComputed') as IsComputedColumn,
+			|	CASE WHEN EXISTS (
+			|		SELECT 1
+			|		FROM [sys].[sql_expression_dependencies] AS d
+			|		JOIN [sys].[views] AS v ON d.[referencing_id] = v.[object_id]
+			|		JOIN [sys].[indexes] AS vi ON v.[object_id] = vi.[object_id]
+			|		WHERE d.[referenced_id] = t.[object_id] AND vi.[index_id] = 1
+			|	) THEN 1 ELSE 0 END AS IsReferencedByIndexedView,
 			|	COALESCE((
 			|		SELECT ic.[key_ordinal]
 			|		FROM [sys].[indexes] AS i 

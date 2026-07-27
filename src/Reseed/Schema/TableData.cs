@@ -9,12 +9,14 @@ namespace Reseed.Schema
 		public readonly int ObjectId;
 		public readonly Key PrimaryKey;
 		public readonly ColumnSchema[] Columns;
+		public readonly bool IsReferencedByIndexedView;
 
 		public TableData(
 			[NotNull] ObjectName name, 
 			int objectId,
 			[CanBeNull] Key primaryKey,
-			[NotNull] ColumnSchema[] columns)
+			[NotNull] ColumnSchema[] columns,
+			bool isReferencedByIndexedView)
 		{
 			if (columns == null) throw new ArgumentNullException(nameof(columns));
 			if (columns.Length == 0)
@@ -24,6 +26,7 @@ namespace Reseed.Schema
 			this.ObjectId = objectId;
 			this.PrimaryKey = primaryKey;
 			this.Columns = columns;
+			this.IsReferencedByIndexedView = isReferencedByIndexedView;
 		}
 
 		public override string ToString() => this.Name.ToString();

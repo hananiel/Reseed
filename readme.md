@@ -250,7 +250,7 @@ Also you should specify how each table will be cleaned. There are a few cleanup 
     CleanupMode.PreferTruncate(ObjectName[], ConstraintResolutionBehavior); 
     ``` 
 
-    Pretty much as the previous one, but if Reseed finds that table has no relations, then `TRUNCATE TABLE` statement is used, which should be a lot faster; `DELETE FROM` is used otherwise. It's possible to explicitly specify tables to use `DELETE FROM` for and to choose constraints resolution behavior. 
+    Pretty much as the previous one, but if Reseed finds that table has no incoming foreign keys or indexed view dependencies, then `TRUNCATE TABLE` statement is used, which should be a lot faster; `DELETE FROM` is used otherwise. It's possible to explicitly specify tables to use `DELETE FROM` for and to choose constraints resolution behavior.
     
 3. **Truncate**
 

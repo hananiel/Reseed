@@ -90,6 +90,7 @@ namespace Reseed.Generation.Cleanup
 			var (toDelete, toTruncate) =
 				defaultClean.PartitionBy(o =>
 					cleanupMode.ShouldUseDelete(o.Value.Name) ||
+					o.Value.IsReferencedByIndexedView ||
 					getAllIncomingRelations(o.Value).Any());
 
 			var persistentTables = rest.Concat(customClean).ToArray();

@@ -14,12 +14,14 @@ namespace Reseed.Schema
 		public readonly ObjectName Name;
 		public readonly Key PrimaryKey;
 		public readonly IReadOnlyCollection<ColumnSchema> Columns;
+		public readonly bool IsReferencedByIndexedView;
 		public IReadOnlyCollection<Reference<TableSchema>> References => this.references;
 		
 		private TableSchema(
 			[NotNull] ObjectName name,
 			[NotNull] IReadOnlyCollection<ColumnSchema> columns,
-			[CanBeNull] Key primaryKey)
+			[CanBeNull] Key primaryKey,
+			bool isReferencedByIndexedView)
 		{
 			if (columns == null) throw new ArgumentNullException(nameof(columns));
 			if (columns.Count == 0)
@@ -29,14 +31,16 @@ namespace Reseed.Schema
 			this.Name = name ?? throw new ArgumentNullException(nameof(name));
 			this.Columns = columns;
 			this.PrimaryKey = primaryKey;
+			this.IsReferencedByIndexedView = isReferencedByIndexedView;
 		}
 
 		public TableSchema(
 			[NotNull] ObjectName name,
 			[NotNull] IReadOnlyCollection<ColumnSchema> columns,
 			[NotNull] Key primaryKey,
-			[NotNull] IReadOnlyCollection<Reference<TableSchema>> references)
-			: this(name, columns, primaryKey)
+			[NotNull] IReadOnlyCollection<Reference<TableSchema>> references,
+			bool isReferencedByIndexedView)
+			: this(name, columns, primaryKey, isReferencedByIndexedView)
 		{
 			this.references = new List<Reference<TableSchema>>(references);
 		}
@@ -56,7 +60,8 @@ namespace Reseed.Schema
 				this.Name,
 				this.Columns,
 				this.PrimaryKey,
-				items);
+				items,
+				this.IsReferencedByIndexedView);
 		}
 
 		private static void VerifyPrimaryKeyColumns(IReadOnlyCollection<ColumnSchema> columns, Key primaryKey)

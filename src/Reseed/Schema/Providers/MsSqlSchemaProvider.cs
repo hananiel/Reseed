@@ -35,6 +35,7 @@ namespace Reseed.Schema.Providers
 			new(table.Name,
 				table.Columns,
 				table.PrimaryKey,
-				references);
+				references,
+				table.IsReferencedByIndexedView);
 	}
 }
